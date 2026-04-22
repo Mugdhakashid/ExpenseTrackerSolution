@@ -5,7 +5,7 @@ namespace Models
     public class Category
     {
         [Key]
-        [Required]
+        //id
         public int Id { get; set; }
 
         [Required]
