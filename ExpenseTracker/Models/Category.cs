@@ -5,7 +5,10 @@ namespace Models
     public class Category
     {
         [Key]
+<<<<<<< HEAD
         //id
+=======
+>>>>>>> 0c97ba31be0c7b46906025f42adb5601357ead19
         public int Id { get; set; }
 
         [Required]
