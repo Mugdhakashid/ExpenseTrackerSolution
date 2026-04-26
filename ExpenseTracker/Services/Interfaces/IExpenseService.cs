@@ -1,14 +1,15 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Models.DTOs;
 
 namespace ExpenseTracker.Services.Interfaces
 {
     public interface IExpenseService
     {
-        Task<IEnumerable<Models.ExpenseTracker>> GetAllAsync();
-        Task<Models.ExpenseTracker?> GetByIdAsync(int id);
-        Task<Models.ExpenseTracker> CreateAsync(Models.ExpenseTracker expense);
-        Task<bool> UpdateAsync(Models.ExpenseTracker expense);
+        Task<IEnumerable<ExpenseDTO>> GetAllAsync();
+        Task<ExpenseDTO?> GetByIdAsync(int id);
+        Task<ExpenseDTO> CreateAsync(ExpenseDTO expense);
+        Task<bool> UpdateAsync(ExpenseDTO expense);
         Task<bool> DeleteAsync(int id);
     }
 }

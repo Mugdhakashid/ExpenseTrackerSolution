@@ -1,6 +1,7 @@
 using ExpenseTracker.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Models;
+using Models.DTOs;
 namespace ExpenseTracker.Services
 {
     public class ExpenseService : IExpenseService
@@ -12,28 +13,60 @@ namespace ExpenseTracker.Services
             _db = db;
         }
 
-        public async Task<IEnumerable<Models.ExpenseTracker>> GetAllAsync()
+        public async Task<IEnumerable<ExpenseDTO>> GetAllAsync()
         {
-            return await _db.Expenses.Include(e => e.Category).ToListAsync();
+            var categories= await _db.Expenses.Include(e => e.Category).ToListAsync();
+            return categories.Select(e => new ExpenseDTO
+            {
+                Id = e.Id,
+                Title = e.Title,
+                Amount = e.Amount,
+                Date = e.Date,
+                CategoryId = e.CategoryId,
+                CategoryName = e.Category.Name
+            });
+
         }
 
-        public async Task<Models.ExpenseTracker?> GetByIdAsync(int id)
+        public async Task<ExpenseDTO> GetByIdAsync(int id)
         {
-            return await _db.Expenses.Include(e => e.Category).FirstOrDefaultAsync(e => e.Id == id);
+            var category= await _db.Expenses.Include(e => e.Category).FirstOrDefaultAsync(e => e.Id == id);
+            if (category == null) return null;
+            return new ExpenseDTO
+            {
+                Id = category.Id,
+                Title = category.Title,
+                Amount = category.Amount,
+                Date = category.Date,
+                CategoryId = category.CategoryId,
+                CategoryName = category.Category.Name
+            };
         }
 
-        public async Task<Models.ExpenseTracker> CreateAsync(Models.ExpenseTracker expense)
+        public async Task<ExpenseDTO> CreateAsync(ExpenseDTO expense)
         {
-            _db.Expenses.Add(expense);
+            Models.ExpenseTracker expenseTracker=new Models.ExpenseTracker
+            {
+                Title = expense.Title,
+                Amount = expense.Amount,
+                Date = expense.Date,
+                CategoryId = expense.CategoryId
+            };
+            _db.Expenses.Add(expenseTracker);
             await _db.SaveChangesAsync();
             return expense;
         }
 
-        public async Task<bool> UpdateAsync(Models.ExpenseTracker expense)
+        public async Task<bool> UpdateAsync(ExpenseDTO expense)
         {
-            var exists = await _db.Expenses.AnyAsync(e => e.Id == expense.Id);
-            if (!exists) return false;
-            _db.Expenses.Update(expense);
+            Models.ExpenseTracker expenseTracker = new Models.ExpenseTracker
+            {
+                Title = expense.Title,
+                Amount = expense.Amount,
+                Date = expense.Date,
+                CategoryId = expense.CategoryId
+            };
+            _db.Expenses.Update(expenseTracker);
             await _db.SaveChangesAsync();
             return true;
         }

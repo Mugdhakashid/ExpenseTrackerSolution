@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using ExpenseTracker.Services.Interfaces;
+using Models.DTOs;
 using Models;
+
 
 namespace ExpenseTracker.Services
 {
@@ -13,29 +15,51 @@ namespace ExpenseTracker.Services
             _db = db;
         }
 
-        public async Task<IEnumerable<Models.Category>> GetAllAsync()
+        public async Task<IEnumerable<CategoryDTO>> GetAllAsync()
         {
-            return await _db.Categories.ToListAsync();
+            var categories= await _db.Categories.ToListAsync();
+            return categories.Select(c => new CategoryDTO
+            {
+                Id = c.Id,
+                Name = c.Name
+            });
         }
 
-        public async Task<Models.Category?> GetByIdAsync(int id)
+        public async Task<CategoryDTO> GetByIdAsync(int id)
         {
-            return await _db.Categories.FindAsync(id);
+            var category= await _db.Categories.FindAsync(id);
+            if (category == null) return null;
+            return new CategoryDTO
+            {
+                Id = category.Id,
+                Name = category.Name
+            };
         }
 
-        public async Task<Models.Category> CreateAsync(Models.Category category)
+        public async Task<CategoryDTO> CreateAsync(CategoryDTO dto)
         {
-            _db.Categories.Add(category);
+            Category categoryEntity = new Category
+            {
+                Id = dto.Id,
+                Name = dto.Name
+            };
+            _db.Categories.Add(categoryEntity);
             await _db.SaveChangesAsync();
-            return category;
+
+           
+            return  dto;
         }
 
-        public async Task<bool> UpdateAsync(Models.Category category)
+        public async Task<bool> UpdateAsync(CategoryDTO dto)
         {
-            var exists = await _db.Categories.AnyAsync(c => c.Id == category.Id);
-            if (!exists) return false;
-            _db.Categories.Update(category);
+            Category categoryEntity = new Category
+            {
+                Id = dto.Id,
+                Name = dto.Name
+            };
+            _db.Categories.Update(categoryEntity);
             await _db.SaveChangesAsync();
+
             return true;
         }
 
