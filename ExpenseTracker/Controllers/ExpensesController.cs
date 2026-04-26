@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using ExpenseTracker.Services.Interfaces;
+using Models.DTOs;
 
 namespace ExpenseTracker.Controllers
 {
@@ -35,14 +36,14 @@ namespace ExpenseTracker.Controllers
         /// <param name="expense"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Models.ExpenseTracker expense)
+        public async Task<IActionResult> Create(ExpenseDTO expense)
         {
             var created = await _service.CreateAsync(expense);
             return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] Models.ExpenseTracker expense)
+        public async Task<IActionResult> Update(int id, ExpenseDTO expense)
         {
             if (id != expense.Id) return BadRequest();
             var updated = await _service.UpdateAsync(expense);
